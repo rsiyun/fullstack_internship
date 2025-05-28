@@ -15,7 +15,6 @@ type CustomValidator struct {
 func (cv *CustomValidator) Validate(i interface{}) error {
 	return cv.validator.Struct(i)
 }
-
 func Api(authHandler *handler.AuthHandler, categoryHandler *handler.CategoryHandler, bookHandler *handler.BookHandler) *echo.Echo {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
@@ -38,5 +37,7 @@ func Api(authHandler *handler.AuthHandler, categoryHandler *handler.CategoryHand
 	gJwt.POST("/book", bookHandler.CreateBook)
 	gJwt.PUT("/book/:id", bookHandler.UpdateBook)
 	gJwt.DELETE("/book/:id", bookHandler.DeleteBook)
+	gJwt.GET("/book/category/:category_id", bookHandler.GetBooksByCategory)
+	gJwt.GET("/book/category/:category_id/count", bookHandler.CountBooksByCategory)
 	return e
 }
