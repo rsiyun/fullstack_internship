@@ -1,29 +1,43 @@
 package helpers
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
-func BindAndValidate(c echo.Context, req interface{}) echo.Map {
+type ErrorValidation struct {
+	Message string   `json:"message"`
+	Errors  []string `json:"errors"`
+}
+
+func BindAndValidate(c echo.Context, req interface{}) *ErrorValidation {
 	if err := c.Bind(req); err != nil {
-		return echo.Map{
-			"message": "Invalid request",
+		return &ErrorValidation{
+			Message: "Invalid request format",
+			Errors:  []string{err.Error()},
 		}
 	}
 	if err := c.Validate(req); err != nil {
-		validationErrors := err.(validator.ValidationErrors)
-		errors := make(map[string]string)
-
+		validationErrors, ok := err.(validator.ValidationErrors)
+		if !ok {
+			return &ErrorValidation{
+				Message: "Validation failed",
+				Errors:  []string{err.Error()},
+			}
+		}
+		var errors []string
 		for _, e := range validationErrors {
-			errors[e.Field()] = e.Error()
+			errors = append(errors, fmt.Sprintf("Field '%s': %s", e.Field(), e.Error()))
 		}
 
-		return echo.Map{
-			"message": "Validation failed",
-			"errors":  errors,
+		return &ErrorValidation{
+			Message: "Validation failed",
+			Errors:  errors,
 		}
 	}
 
+	// Jika tidak ada error, kembalikan nil
 	return nil
 }
