@@ -29,9 +29,10 @@ func (h *AuthHandler) Login(c echo.Context) error {
 
 	response, err := h.authService.Login(req)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, dtos.ErrorResponse{
-			Message:    err.Error(),
-			StatusCode: http.StatusUnauthorized,
+		return c.JSON(err.StatusCode, dtos.ErrorResponse{
+			Message:    err.Message,
+			StatusCode: err.StatusCode,
+			Details:    err.Details,
 		})
 	}
 

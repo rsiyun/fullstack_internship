@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type IncomeCategory struct {
+type ExpenseCategory struct {
 	ID        uint   `json:"id" gorm:"primaryKey"`
 	UserId    uint   `json:"user_id" gorm:"not null"`
 	User      User   `json:"user" gorm:"foreignKey:UserId;references:ID"`

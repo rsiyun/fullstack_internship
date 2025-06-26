@@ -18,10 +18,10 @@ var migrateCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("Failed to connect to database: %v", err)
 		}
-		if err := db.Migrator().DropTable(&models.User{}); err != nil {
+		if err := db.Migrator().DropTable(&models.User{}, &models.Wallet{}, &models.IncomeCategory{}, &models.ExpenseCategory{}, &models.Income{}, &models.Expense{}); err != nil {
 			log.Printf("Warning: Failed to drop table: %v", err)
 		}
-		err = db.AutoMigrate(&models.User{})
+		err = db.AutoMigrate(&models.User{}, &models.Wallet{}, &models.IncomeCategory{}, &models.ExpenseCategory{}, &models.Income{}, &models.Expense{})
 		if err != nil {
 			log.Fatalf("Failed to migrate database: %v", err)
 		}
