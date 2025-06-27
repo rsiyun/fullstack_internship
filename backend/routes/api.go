@@ -4,6 +4,7 @@ import (
 	"api-money-management/internal/middlewares"
 	"api-money-management/pkg/common"
 	"api-money-management/pkg/database"
+	"api-money-management/pkg/utils"
 	"log"
 	"net/http"
 
@@ -13,6 +14,7 @@ import (
 
 func New(enableCors bool) (*echo.Echo, error) {
 	e := echo.New()
+	e.Validator = utils.NewGlobalValidator()
 	// sambungin db dulu
 	db, err := database.DBConn()
 	if err != nil {
@@ -43,11 +45,8 @@ func Routes(e *echo.Echo, allHandler *common.Handler) {
 			"message": "user",
 		})
 	})
-	api.GET("/wallet", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"message": "wallet",
-		})
-	})
+	api.POST("/wallet", allHandler.WalletHandler.CreateWallet)
+	api.GET("/wallet", allHandler.WalletHandler.GetWalletUser)
 }
 
 func SetupMiddleware(e *echo.Echo, enableCors bool) {

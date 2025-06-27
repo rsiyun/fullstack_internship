@@ -20,20 +20,25 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 	authRepository := repositories.NewAuthRepository(db)
 	authService := services.NewAuthService(authRepository)
 	authHandler := handlers.NewAuthHandler(authService)
+	walletRepository := repositories.NewWalletRepository(db)
+	walletService := services.NewWalletService(walletRepository)
+	walletHandler := handlers.NewWalletHandler(walletService)
 	handler := &Handler{
-		AuthHandler: authHandler,
+		AuthHandler:   authHandler,
+		WalletHandler: walletHandler,
 	}
 	return handler, nil
 }
 
 // injector.go:
 
-var repositorySet = wire.NewSet(repositories.NewAuthRepository)
+var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository)
 
-var serviceSet = wire.NewSet(services.NewAuthService)
+var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService)
 
-var handlerSet = wire.NewSet(handlers.NewAuthHandler)
+var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler)
 
 type Handler struct {
-	AuthHandler *handlers.AuthHandler
+	AuthHandler   *handlers.AuthHandler
+	WalletHandler *handlers.WalletHandler
 }

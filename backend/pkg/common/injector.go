@@ -14,21 +14,25 @@ import (
 
 var repositorySet = wire.NewSet(
 	repositories.NewAuthRepository,
+	repositories.NewWalletRepository,
 )
 
 var serviceSet = wire.NewSet(
 	services.NewAuthService,
+	services.NewWalletService,
 )
 
 var handlerSet = wire.NewSet(
 	handlers.NewAuthHandler,
+	handlers.NewWalletHandler,
 )
 
 type Handler struct {
-	AuthHandler *handlers.AuthHandler
+	AuthHandler   *handlers.AuthHandler
+	WalletHandler *handlers.WalletHandler
 }
 
 func InjectDependencies(db *gorm.DB) (*Handler, error) {
-	wire.Build(repositorySet, serviceSet, handlerSet, wire.Struct(new(Handler), "authHandler"))
+	wire.Build(repositorySet, serviceSet, handlerSet, wire.Struct(new(Handler), "*"))
 	return nil, nil
 }
