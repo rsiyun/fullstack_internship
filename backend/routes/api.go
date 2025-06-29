@@ -47,6 +47,12 @@ func Routes(e *echo.Echo, allHandler *common.Handler) {
 	})
 	api.POST("/wallet", allHandler.WalletHandler.CreateWallet)
 	api.GET("/wallet", allHandler.WalletHandler.GetWalletUser)
+	api.GET("/wallet/:id", allHandler.WalletHandler.ShowWallet)
+	api.PUT("/wallet/:id", allHandler.WalletHandler.UpdateWallet)
+	api.POST("/category-income", allHandler.CategoryIncomeHandler.CreateCategoryIncome)
+	api.GET("/category-income", allHandler.CategoryIncomeHandler.GetCategoryIncome)
+	api.GET("/category-income/:id", allHandler.CategoryIncomeHandler.ShowCategoryIncome)
+	api.PUT("/category-income/:id", allHandler.CategoryIncomeHandler.UpdateCategoryIncome)
 }
 
 func SetupMiddleware(e *echo.Echo, enableCors bool) {

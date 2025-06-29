@@ -6,6 +6,7 @@ import (
 	"api-money-management/internal/services"
 	"api-money-management/pkg/auth"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,6 +36,71 @@ func (h *WalletHandler) GetWalletUser(c echo.Context) error {
 	})
 }
 
+func (h *WalletHandler) ShowWallet(c echo.Context) error {
+	walletId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
+			Message: "Invalid wallet ID",
+			Code:    http.StatusBadRequest,
+			Details: "Wallet ID must be a number",
+		})
+	}
+	wallet, errDatabase := h.walletservice.GetWalletByID(walletId)
+	if errDatabase != nil {
+		return c.JSON(errDatabase.Code, errDatabase)
+	}
+	return c.JSON(http.StatusOK, dtos.SuccessResponse{
+		Message: "Wallet retrieved successfully",
+		Code:    http.StatusOK,
+		Data:    wallet,
+	})
+}
+
+func (h *WalletHandler) UpdateWallet(c echo.Context) error {
+	walletId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
+			Message: "Invalid wallet ID",
+			Code:    http.StatusBadRequest,
+			Details: "Wallet ID must be a number",
+		})
+	}
+	userID, errorIDToken := auth.GetUserIDFromToken(c)
+	if errorIDToken != nil {
+		return c.JSON(errorIDToken.Code, errorIDToken)
+	}
+	req := new(dtos.RequestWallet)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
+			Message: "Invalid request format",
+			Code:    http.StatusBadRequest,
+			Details: err.Error(),
+		})
+	}
+	req.UserID = int(userID)
+	errors := c.Validate(req)
+	if errors != nil {
+		err := dtos.NewValidationError(errors)
+		return c.JSON(err.Code, err)
+	}
+	wallet := &models.Wallet{
+		ID:      uint(walletId),
+		UserId:  uint(req.UserID),
+		Name:    req.Name,
+		Balance: req.Balance,
+	}
+	result, errDatabase := h.walletservice.UpdateWallet(wallet)
+	if errDatabase != nil {
+		return c.JSON(errDatabase.Code, err)
+	}
+	return c.JSON(http.StatusOK, dtos.SuccessResponse{
+		Message: "Wallet updated successfully",
+		Code:    http.StatusOK,
+		Data:    result,
+	})
+	// result, errordatabase := h.walletservice.(wallet)
+}
+
 func (h *WalletHandler) CreateWallet(c echo.Context) error {
 	// ambil terlebih dahulu data dari jwt token
 	userID, errorIDToken := auth.GetUserIDFromToken(c)
@@ -55,13 +121,10 @@ func (h *WalletHandler) CreateWallet(c echo.Context) error {
 	req.UserID = int(userID)
 
 	// // validasi request terlebih dahulu
-	err := c.Validate(req)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
-			Message: "validation failed",
-			Code:    http.StatusBadRequest,
-			Details: err.Error(),
-		})
+	errvalidation := c.Validate(req)
+	if errvalidation != nil {
+		err := dtos.NewValidationError(errvalidation)
+		return c.JSON(err.Code, err)
 	}
 	wallet := &models.Wallet{
 		UserId:  uint(req.UserID),

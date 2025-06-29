@@ -22,12 +22,31 @@ func (s *WalletService) GetWalletByUserID(userID int) (*dtos.WalletListResponse,
 	return dtos.ToWalletListResponse(wallets), nil
 }
 
-// func GetWalletByID(walletID int) (models.Wallet, *dtos.ErrorResponse) {
-
-// }
+func (s *WalletService) GetWalletByID(walletID int) (*dtos.WalletResponse, *dtos.ErrorResponse) {
+	wallet, err := s.walletRepo.FindWalletByID(walletID)
+	if err != nil {
+		return nil, err
+	}
+	return dtos.ToWalletResponse(wallet), nil
+}
 
 func (s *WalletService) CreateWallet(request *models.Wallet) (*dtos.WalletResponse, *dtos.ErrorResponse) {
 	data, err := s.walletRepo.CreateWallet(request)
+	if err != nil {
+		return nil, err
+	}
+	return dtos.ToWalletResponse(data), nil
+}
+func (s *WalletService) UpdateWallet(request *models.Wallet) (*dtos.WalletResponse, *dtos.ErrorResponse) {
+	existingwallet, err := s.walletRepo.FindWalletByID(int(request.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	existingwallet.Balance = request.Balance
+	existingwallet.Name = request.Name
+
+	data, err := s.walletRepo.UpdateWallet(request)
 	if err != nil {
 		return nil, err
 	}

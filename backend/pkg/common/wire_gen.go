@@ -23,22 +23,27 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 	walletRepository := repositories.NewWalletRepository(db)
 	walletService := services.NewWalletService(walletRepository)
 	walletHandler := handlers.NewWalletHandler(walletService)
+	categoryIncomeRepo := repositories.NewCategoryIncome(db)
+	categoryIncomeService := services.NewCategoryIncomeService(categoryIncomeRepo)
+	categoryIncomeHandler := handlers.NewCategoryIncomeHandler(categoryIncomeService)
 	handler := &Handler{
-		AuthHandler:   authHandler,
-		WalletHandler: walletHandler,
+		AuthHandler:           authHandler,
+		WalletHandler:         walletHandler,
+		CategoryIncomeHandler: categoryIncomeHandler,
 	}
 	return handler, nil
 }
 
 // injector.go:
 
-var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository)
+var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository, repositories.NewCategoryIncome)
 
-var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService)
+var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService, services.NewCategoryIncomeService)
 
-var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler)
+var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler, handlers.NewCategoryIncomeHandler)
 
 type Handler struct {
-	AuthHandler   *handlers.AuthHandler
-	WalletHandler *handlers.WalletHandler
+	AuthHandler           *handlers.AuthHandler
+	WalletHandler         *handlers.WalletHandler
+	CategoryIncomeHandler *handlers.CategoryIncomeHandler
 }

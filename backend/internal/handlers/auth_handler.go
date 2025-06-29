@@ -27,6 +27,8 @@ func (h *AuthHandler) Login(c echo.Context) error {
 		})
 	}
 
+	// tambahin validasi bos
+
 	response, err := h.authService.Login(req)
 	if err != nil {
 		return c.JSON(err.Code, dtos.ErrorResponse{
@@ -46,6 +48,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 			Code:    http.StatusBadRequest,
 		})
 	}
+	// tambahin validasi
 	result, err := h.authService.Register(req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, dtos.ErrorResponse{
