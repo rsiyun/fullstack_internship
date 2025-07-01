@@ -34,17 +34,49 @@ func (r *IncomeRepository) FindIncomeById(incomeID int) (*models.Income, *dtos.E
 	return &data, nil
 }
 
-func (r *IncomeRepository) CreateIncome(income *models.Income) (*models.Income, *dtos.ErrorResponse) {
-	result := r.db.Create(income)
-	if result.RowsAffected > 0 {
-		return income, nil
+func (r *IncomeRepository) CreateIncome(income *models.Income, wallet *models.Wallet) (*models.Income, *dtos.ErrorResponse) {
+	tx := r.db.Begin()
+	defer func() {
+		if rec := recover(); rec != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := tx.Save(wallet).Error; err != nil {
+		tx.Rollback()
+		return nil, dtos.NewErrorResponse("failed to update wallet", 500, err.Error())
 	}
-	return nil, dtos.NewErrorResponse("Failed to create income", 500, "database error")
+	if err := tx.Create(income).Error; err != nil {
+		return nil, dtos.NewErrorResponse("failed to create income", 500, err.Error())
+	}
+	if err := tx.Commit().Error; err != nil {
+		return nil, dtos.NewErrorResponse("Failed to commit transaction", 500, err.Error())
+	}
+	return income, nil
 }
-func (r *IncomeRepository) UpdateIncome(income *models.Income) (*models.Income, *dtos.ErrorResponse) {
-	result := r.db.Save(income)
-	if result.RowsAffected > 0 {
-		return income, nil
+func (r *IncomeRepository) UpdateIncome(income *models.Income, oldwallet, newwallet *models.Wallet) (*models.Income, *dtos.ErrorResponse) {
+	tx := r.db.Begin()
+	defer func() {
+		if rec := recover(); rec != nil {
+			tx.Rollback()
+		}
+	}()
+	if err := tx.Save(oldwallet).Error; err != nil {
+		tx.Rollback()
+		return nil, dtos.NewErrorResponse("failed to update old wallet", 500, err.Error())
 	}
-	return nil, dtos.NewErrorResponse("Failed to update income", 500, "database error")
+	if oldwallet.ID != newwallet.ID {
+		if err := tx.Save(newwallet).Error; err != nil {
+			tx.Rollback()
+			return nil, dtos.NewErrorResponse("failed to update new wallet", 500, err.Error())
+		}
+	}
+	if err := tx.Save(income).Error; err != nil {
+		tx.Rollback()
+		return nil, dtos.NewErrorResponse("failed to update income", 500, err.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, dtos.NewErrorResponse("Failed to commit transaction", 500, err.Error())
+	}
+	return income, nil
 }

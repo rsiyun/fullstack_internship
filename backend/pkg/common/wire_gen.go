@@ -24,7 +24,7 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 	walletService := services.NewWalletService(walletRepository)
 	walletHandler := handlers.NewWalletHandler(walletService)
 	incomeRepository := repositories.NewIncomeRepository(db)
-	incomeService := services.NewIncomeService(incomeRepository)
+	incomeService := services.NewIncomeService(incomeRepository, walletRepository)
 	incomeHandler := handlers.NewIncomeHandler(incomeService)
 	categoryIncomeRepo := repositories.NewCategoryIncomeRepository(db)
 	categoryIncomeService := services.NewCategoryIncomeService(categoryIncomeRepo)

@@ -53,6 +53,11 @@ func Routes(e *echo.Echo, allHandler *common.Handler) {
 	api.GET("/category-income", allHandler.CategoryIncomeHandler.GetCategoryIncome)
 	api.GET("/category-income/:id", allHandler.CategoryIncomeHandler.ShowCategoryIncome)
 	api.PUT("/category-income/:id", allHandler.CategoryIncomeHandler.UpdateCategoryIncome)
+	api.POST("/income", allHandler.IncomeHandler.CreateIncome)
+	api.GET("/income", allHandler.IncomeHandler.GetIncomes)
+	api.GET("/income/:id", allHandler.IncomeHandler.ShowIncome)
+	api.PUT("/income/:id", allHandler.IncomeHandler.UpdateIncome)
+	// api.PUT("/category-inco")
 	// api.GET("")
 }
 
