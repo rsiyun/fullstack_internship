@@ -53,6 +53,7 @@ func Routes(e *echo.Echo, allHandler *common.Handler) {
 	api.GET("/category-income", allHandler.CategoryIncomeHandler.GetCategoryIncome)
 	api.GET("/category-income/:id", allHandler.CategoryIncomeHandler.ShowCategoryIncome)
 	api.PUT("/category-income/:id", allHandler.CategoryIncomeHandler.UpdateCategoryIncome)
+	// api.GET("")
 }
 
 func SetupMiddleware(e *echo.Echo, enableCors bool) {

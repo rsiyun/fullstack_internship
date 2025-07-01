@@ -23,12 +23,16 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 	walletRepository := repositories.NewWalletRepository(db)
 	walletService := services.NewWalletService(walletRepository)
 	walletHandler := handlers.NewWalletHandler(walletService)
-	categoryIncomeRepo := repositories.NewCategoryIncome(db)
+	incomeRepository := repositories.NewIncomeRepository(db)
+	incomeService := services.NewIncomeService(incomeRepository)
+	incomeHandler := handlers.NewIncomeHandler(incomeService)
+	categoryIncomeRepo := repositories.NewCategoryIncomeRepository(db)
 	categoryIncomeService := services.NewCategoryIncomeService(categoryIncomeRepo)
 	categoryIncomeHandler := handlers.NewCategoryIncomeHandler(categoryIncomeService)
 	handler := &Handler{
 		AuthHandler:           authHandler,
 		WalletHandler:         walletHandler,
+		IncomeHandler:         incomeHandler,
 		CategoryIncomeHandler: categoryIncomeHandler,
 	}
 	return handler, nil
@@ -36,14 +40,15 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 
 // injector.go:
 
-var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository, repositories.NewCategoryIncome)
+var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository, repositories.NewIncomeRepository, repositories.NewCategoryIncomeRepository)
 
-var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService, services.NewCategoryIncomeService)
+var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService, services.NewIncomeService, services.NewCategoryIncomeService)
 
-var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler, handlers.NewCategoryIncomeHandler)
+var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler, handlers.NewIncomeHandler, handlers.NewCategoryIncomeHandler)
 
 type Handler struct {
 	AuthHandler           *handlers.AuthHandler
 	WalletHandler         *handlers.WalletHandler
+	IncomeHandler         *handlers.IncomeHandler
 	CategoryIncomeHandler *handlers.CategoryIncomeHandler
 }

@@ -11,7 +11,7 @@ type CategoryExpenseRepo struct {
 	db *gorm.DB
 }
 
-func NewCategoryExpense(db *gorm.DB) *CategoryExpenseRepo {
+func NewCategoryExpenseRepository(db *gorm.DB) *CategoryExpenseRepo {
 	return &CategoryExpenseRepo{db: db}
 }
 

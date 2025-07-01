@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type Income struct {
 	ID               uint           `json:"id" gorm:"primaryKey"`
@@ -12,5 +14,5 @@ type Income struct {
 	IncomeCategory   IncomeCategory `json:"income_category" gorm:"foreignKey:IncomeCategoryId;references:ID"`
 	Amount           float64        `json:"amount" gorm:"not null"`
 	Description      string         `json:"description" gorm:"not null"`
-	CreatedAt        time.Time
+	gorm.Model
 }

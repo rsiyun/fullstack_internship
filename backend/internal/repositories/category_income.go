@@ -11,7 +11,7 @@ type CategoryIncomeRepo struct {
 	db *gorm.DB
 }
 
-func NewCategoryIncome(db *gorm.DB) *CategoryIncomeRepo {
+func NewCategoryIncomeRepository(db *gorm.DB) *CategoryIncomeRepo {
 	return &CategoryIncomeRepo{db: db}
 }
 
@@ -40,16 +40,9 @@ func (r *CategoryIncomeRepo) CreateIncomeCategory(incomeCategory *models.IncomeC
 }
 
 func (r *CategoryIncomeRepo) UpdateIncomeCategory(incomeCategory *models.IncomeCategory) (*models.IncomeCategory, *dtos.ErrorResponse) {
-	existingCategory, err := r.FindCategoryIncomeById(int(incomeCategory.ID))
-	if err != nil {
-		return nil, err
-	}
-	existingCategory.Name = incomeCategory.Name
-	existingCategory.Color = incomeCategory.Color
-	existingCategory.Icon = incomeCategory.Icon
-	result := r.db.Save(&existingCategory)
+	result := r.db.Save(incomeCategory)
 	if result.RowsAffected > 0 {
-		return existingCategory, nil
+		return incomeCategory, nil
 	}
 	return nil, dtos.NewErrorResponse("Failed to update category", 500, "database error")
 

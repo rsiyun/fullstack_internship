@@ -15,24 +15,28 @@ import (
 var repositorySet = wire.NewSet(
 	repositories.NewAuthRepository,
 	repositories.NewWalletRepository,
-	repositories.NewCategoryIncome,
+	repositories.NewIncomeRepository,
+	repositories.NewCategoryIncomeRepository,
 )
 
 var serviceSet = wire.NewSet(
 	services.NewAuthService,
 	services.NewWalletService,
+	services.NewIncomeService,
 	services.NewCategoryIncomeService,
 )
 
 var handlerSet = wire.NewSet(
 	handlers.NewAuthHandler,
 	handlers.NewWalletHandler,
+	handlers.NewIncomeHandler,
 	handlers.NewCategoryIncomeHandler,
 )
 
 type Handler struct {
 	AuthHandler           *handlers.AuthHandler
 	WalletHandler         *handlers.WalletHandler
+	IncomeHandler         *handlers.IncomeHandler
 	CategoryIncomeHandler *handlers.CategoryIncomeHandler
 }
 
