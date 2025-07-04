@@ -24,31 +24,36 @@ func InjectDependencies(db *gorm.DB) (*Handler, error) {
 	walletService := services.NewWalletService(walletRepository)
 	walletHandler := handlers.NewWalletHandler(walletService)
 	incomeRepository := repositories.NewIncomeRepository(db)
-	incomeService := services.NewIncomeService(incomeRepository, walletRepository)
-	incomeHandler := handlers.NewIncomeHandler(incomeService)
 	categoryIncomeRepo := repositories.NewCategoryIncomeRepository(db)
+	incomeService := services.NewIncomeService(incomeRepository, walletRepository, categoryIncomeRepo)
+	incomeHandler := handlers.NewIncomeHandler(incomeService)
 	categoryIncomeService := services.NewCategoryIncomeService(categoryIncomeRepo)
 	categoryIncomeHandler := handlers.NewCategoryIncomeHandler(categoryIncomeService)
+	categoryExpenseRepo := repositories.NewCategoryExpenseRepository(db)
+	categoryExpenseService := services.NewCategoryExpenseService(categoryExpenseRepo)
+	categoryExpenseHandler := handlers.NewCategoryExpenseHandler(categoryExpenseService)
 	handler := &Handler{
-		AuthHandler:           authHandler,
-		WalletHandler:         walletHandler,
-		IncomeHandler:         incomeHandler,
-		CategoryIncomeHandler: categoryIncomeHandler,
+		AuthHandler:            authHandler,
+		WalletHandler:          walletHandler,
+		IncomeHandler:          incomeHandler,
+		CategoryIncomeHandler:  categoryIncomeHandler,
+		CategoryExpenseHandler: categoryExpenseHandler,
 	}
 	return handler, nil
 }
 
 // injector.go:
 
-var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository, repositories.NewIncomeRepository, repositories.NewCategoryIncomeRepository)
+var repositorySet = wire.NewSet(repositories.NewAuthRepository, repositories.NewWalletRepository, repositories.NewIncomeRepository, repositories.NewCategoryIncomeRepository, repositories.NewCategoryExpenseRepository)
 
-var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService, services.NewIncomeService, services.NewCategoryIncomeService)
+var serviceSet = wire.NewSet(services.NewAuthService, services.NewWalletService, services.NewIncomeService, services.NewCategoryIncomeService, services.NewCategoryExpenseService)
 
-var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler, handlers.NewIncomeHandler, handlers.NewCategoryIncomeHandler)
+var handlerSet = wire.NewSet(handlers.NewAuthHandler, handlers.NewWalletHandler, handlers.NewIncomeHandler, handlers.NewCategoryIncomeHandler, handlers.NewCategoryExpenseHandler)
 
 type Handler struct {
-	AuthHandler           *handlers.AuthHandler
-	WalletHandler         *handlers.WalletHandler
-	IncomeHandler         *handlers.IncomeHandler
-	CategoryIncomeHandler *handlers.CategoryIncomeHandler
+	AuthHandler            *handlers.AuthHandler
+	WalletHandler          *handlers.WalletHandler
+	IncomeHandler          *handlers.IncomeHandler
+	CategoryIncomeHandler  *handlers.CategoryIncomeHandler
+	CategoryExpenseHandler *handlers.CategoryExpenseHandler
 }

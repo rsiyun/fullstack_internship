@@ -6,9 +6,8 @@ import (
 )
 
 type RequestWallet struct {
-	UserID  int     `json:"user_id" validate:"required"`
 	Name    string  `json:"name" validate:"required"`
-	Balance float64 `json:"balance" validate:"required"`
+	Balance float64 `json:"balance" validate:"number,gte=0"`
 }
 
 type WalletResponse struct {

@@ -77,7 +77,6 @@ func (h *WalletHandler) UpdateWallet(c echo.Context) error {
 			Details: err.Error(),
 		})
 	}
-	req.UserID = int(userID)
 	errors := c.Validate(req)
 	if errors != nil {
 		err := dtos.NewValidationError(errors)
@@ -85,7 +84,7 @@ func (h *WalletHandler) UpdateWallet(c echo.Context) error {
 	}
 	wallet := &models.Wallet{
 		ID:      uint(walletId),
-		UserId:  uint(req.UserID),
+		UserId:  userID,
 		Name:    req.Name,
 		Balance: req.Balance,
 	}
@@ -118,7 +117,6 @@ func (h *WalletHandler) CreateWallet(c echo.Context) error {
 			Details: err.Error(),
 		})
 	}
-	req.UserID = int(userID)
 
 	// // validasi request terlebih dahulu
 	errvalidation := c.Validate(req)
@@ -127,7 +125,7 @@ func (h *WalletHandler) CreateWallet(c echo.Context) error {
 		return c.JSON(err.Code, err)
 	}
 	wallet := &models.Wallet{
-		UserId:  uint(req.UserID),
+		UserId:  userID,
 		Name:    req.Name,
 		Balance: req.Balance,
 	}

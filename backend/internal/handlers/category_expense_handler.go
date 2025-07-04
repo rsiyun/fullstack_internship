@@ -11,23 +11,23 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type CategoryIncomeHandler struct {
-	categoryIncomeService *services.CategoryIncomeService
+type CategoryExpenseHandler struct {
+	categoryExpenseService *services.CategoryExpenseService
 }
 
-func NewCategoryIncomeHandler(categoryIncomeService *services.CategoryIncomeService) *CategoryIncomeHandler {
-	return &CategoryIncomeHandler{
-		categoryIncomeService: categoryIncomeService,
+func NewCategoryExpenseHandler(categoryExpenseService *services.CategoryExpenseService) *CategoryExpenseHandler {
+	return &CategoryExpenseHandler{
+		categoryExpenseService: categoryExpenseService,
 	}
 }
 
-func (h *CategoryIncomeHandler) GetCategoryIncome(c echo.Context) error {
+func (h *CategoryExpenseHandler) GetCategoryExpense(c echo.Context) error {
 	userID, errorIDToken := auth.GetUserIDFromToken(c)
 	if errorIDToken != nil {
 		return c.JSON(errorIDToken.Code, errorIDToken)
 	}
 
-	response, err := h.categoryIncomeService.GetCategoryIncomeByUserId(int(userID))
+	response, err := h.categoryExpenseService.GetCategoryExpenseByUserId(int(userID))
 	if err != nil {
 		return c.JSON(err.Code, err)
 	}
@@ -39,7 +39,7 @@ func (h *CategoryIncomeHandler) GetCategoryIncome(c echo.Context) error {
 	})
 }
 
-func (h *CategoryIncomeHandler) ShowCategoryIncome(c echo.Context) error {
+func (h *CategoryExpenseHandler) ShowCategoryExpense(c echo.Context) error {
 	categoryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
@@ -49,7 +49,7 @@ func (h *CategoryIncomeHandler) ShowCategoryIncome(c echo.Context) error {
 		})
 	}
 
-	category, errdatabase := h.categoryIncomeService.GetCategoryIncomeById(categoryID)
+	category, errdatabase := h.categoryExpenseService.GetCategoryExpenseById(categoryID)
 	if errdatabase != nil {
 		return c.JSON(errdatabase.Code, err)
 	}
@@ -61,7 +61,7 @@ func (h *CategoryIncomeHandler) ShowCategoryIncome(c echo.Context) error {
 	})
 }
 
-func (h *CategoryIncomeHandler) CreateCategoryIncome(c echo.Context) error {
+func (h *CategoryExpenseHandler) CreateCategoryExpense(c echo.Context) error {
 	userID, errorIDToken := auth.GetUserIDFromToken(c)
 	if errorIDToken != nil {
 		return c.JSON(errorIDToken.Code, errorIDToken)
@@ -80,14 +80,14 @@ func (h *CategoryIncomeHandler) CreateCategoryIncome(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dtos.NewValidationError(err))
 	}
 
-	category := &models.IncomeCategory{
+	category := &models.ExpenseCategory{
 		UserId: userID,
 		Name:   req.Name,
 		Icon:   req.Icon,
 		Color:  req.Color,
 	}
 
-	result, err := h.categoryIncomeService.CreateCategoryIncome(category)
+	result, err := h.categoryExpenseService.CreateCategoryExpense(category)
 	if err != nil {
 		return c.JSON(err.Code, err)
 	}
@@ -99,7 +99,7 @@ func (h *CategoryIncomeHandler) CreateCategoryIncome(c echo.Context) error {
 	})
 }
 
-func (h *CategoryIncomeHandler) UpdateCategoryIncome(c echo.Context) error {
+func (h *CategoryExpenseHandler) UpdateCategoryExpense(c echo.Context) error {
 	categoryID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, dtos.ErrorResponse{
@@ -127,7 +127,7 @@ func (h *CategoryIncomeHandler) UpdateCategoryIncome(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, dtos.NewValidationError(err))
 	}
 
-	category := &models.IncomeCategory{
+	category := &models.ExpenseCategory{
 		ID:     uint(categoryID),
 		UserId: userID,
 		Name:   req.Name,
@@ -135,7 +135,7 @@ func (h *CategoryIncomeHandler) UpdateCategoryIncome(c echo.Context) error {
 		Color:  req.Color,
 	}
 
-	result, errdatabase := h.categoryIncomeService.UpdateCategoryIncome(category)
+	result, errdatabase := h.categoryExpenseService.UpdateCategoryExpense(category)
 	if errdatabase != nil {
 		return c.JSON(errdatabase.Code, err)
 	}

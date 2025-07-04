@@ -7,14 +7,16 @@ import (
 )
 
 type IncomeService struct {
-	incomeRepository *repositories.IncomeRepository
-	walletRepository *repositories.WalletRepository
+	incomeRepository         *repositories.IncomeRepository
+	walletRepository         *repositories.WalletRepository
+	incomeCategoryRepository *repositories.CategoryIncomeRepo
 }
 
-func NewIncomeService(incomeRepo *repositories.IncomeRepository, walletRepo *repositories.WalletRepository) *IncomeService {
+func NewIncomeService(incomeRepo *repositories.IncomeRepository, walletRepo *repositories.WalletRepository, incomeCategoryRepo *repositories.CategoryIncomeRepo) *IncomeService {
 	return &IncomeService{
-		incomeRepository: incomeRepo,
-		walletRepository: walletRepo,
+		incomeRepository:         incomeRepo,
+		walletRepository:         walletRepo,
+		incomeCategoryRepository: incomeCategoryRepo,
 	}
 }
 
@@ -38,6 +40,10 @@ func (s *IncomeService) CreateIncome(request *models.Income) (*dtos.IncomeRespon
 	if err != nil {
 		return nil, err
 	}
+	_, err = s.incomeCategoryRepository.FindCategoryIncomeById(int(request.IncomeCategoryId))
+	if err != nil {
+		return nil, err
+	}
 	wallet.Balance = wallet.Balance + request.Amount
 	result, err := s.incomeRepository.CreateIncome(request, wallet)
 	if err != nil {
@@ -47,6 +53,10 @@ func (s *IncomeService) CreateIncome(request *models.Income) (*dtos.IncomeRespon
 }
 func (s *IncomeService) UpdateIncome(request *models.Income) (*dtos.IncomeResponse, *dtos.ErrorResponse) {
 	existingIncome, err := s.incomeRepository.FindIncomeById(int(request.ID))
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.incomeCategoryRepository.FindCategoryIncomeById(int(request.IncomeCategoryId))
 	if err != nil {
 		return nil, err
 	}

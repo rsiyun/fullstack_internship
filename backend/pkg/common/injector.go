@@ -17,6 +17,7 @@ var repositorySet = wire.NewSet(
 	repositories.NewWalletRepository,
 	repositories.NewIncomeRepository,
 	repositories.NewCategoryIncomeRepository,
+	repositories.NewCategoryExpenseRepository,
 )
 
 var serviceSet = wire.NewSet(
@@ -24,6 +25,7 @@ var serviceSet = wire.NewSet(
 	services.NewWalletService,
 	services.NewIncomeService,
 	services.NewCategoryIncomeService,
+	services.NewCategoryExpenseService,
 )
 
 var handlerSet = wire.NewSet(
@@ -31,13 +33,15 @@ var handlerSet = wire.NewSet(
 	handlers.NewWalletHandler,
 	handlers.NewIncomeHandler,
 	handlers.NewCategoryIncomeHandler,
+	handlers.NewCategoryExpenseHandler,
 )
 
 type Handler struct {
-	AuthHandler           *handlers.AuthHandler
-	WalletHandler         *handlers.WalletHandler
-	IncomeHandler         *handlers.IncomeHandler
-	CategoryIncomeHandler *handlers.CategoryIncomeHandler
+	AuthHandler            *handlers.AuthHandler
+	WalletHandler          *handlers.WalletHandler
+	IncomeHandler          *handlers.IncomeHandler
+	CategoryIncomeHandler  *handlers.CategoryIncomeHandler
+	CategoryExpenseHandler *handlers.CategoryExpenseHandler
 }
 
 func InjectDependencies(db *gorm.DB) (*Handler, error) {

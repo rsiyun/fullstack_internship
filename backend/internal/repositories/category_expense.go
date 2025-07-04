@@ -47,6 +47,7 @@ func (r *CategoryExpenseRepo) UpdateExpenseCategory(expenseCategory *models.Expe
 	existingCategory.Name = expenseCategory.Name
 	existingCategory.Color = expenseCategory.Color
 	existingCategory.Icon = expenseCategory.Icon
+
 	result := r.db.Save(&existingCategory)
 	if result.RowsAffected > 0 {
 		return existingCategory, nil

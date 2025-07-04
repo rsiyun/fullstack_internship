@@ -14,14 +14,14 @@ func NewCategoryIncomeService(categoryIncomeRepo *repositories.CategoryIncomeRep
 	return &CategoryIncomeService{categoryIncomeRepo: categoryIncomeRepo}
 }
 
-func (s *CategoryIncomeService) GetCategoryIncomeByUserId(userId int) (*dtos.CategoryIncomeListResponse, *dtos.ErrorResponse) {
+func (s *CategoryIncomeService) GetCategoryIncomeByUserId(userId int) (*dtos.CategoryListResponse, *dtos.ErrorResponse) {
 	result, err := s.categoryIncomeRepo.FindCategoryIncomeByUserId(userId)
 	if err != nil {
 		return nil, err
 	}
 	return dtos.ToCategoryIncomeListResponse(result), nil
 }
-func (s *CategoryIncomeService) GetCategoryIncomeById(categoryId int) (*dtos.CategoryIncomeResponse, *dtos.ErrorResponse) {
+func (s *CategoryIncomeService) GetCategoryIncomeById(categoryId int) (*dtos.CategoryResponse, *dtos.ErrorResponse) {
 	result, err := s.categoryIncomeRepo.FindCategoryIncomeById(categoryId)
 	if err != nil {
 		return nil, err
@@ -29,14 +29,14 @@ func (s *CategoryIncomeService) GetCategoryIncomeById(categoryId int) (*dtos.Cat
 	return dtos.ToCategoryIncomeResponse(result), nil
 
 }
-func (s *CategoryIncomeService) CreateCategoryIncome(request *models.IncomeCategory) (*dtos.CategoryIncomeResponse, *dtos.ErrorResponse) {
+func (s *CategoryIncomeService) CreateCategoryIncome(request *models.IncomeCategory) (*dtos.CategoryResponse, *dtos.ErrorResponse) {
 	result, err := s.categoryIncomeRepo.CreateIncomeCategory(request)
 	if err != nil {
 		return nil, err
 	}
 	return dtos.ToCategoryIncomeResponse(result), nil
 }
-func (s *CategoryIncomeService) UpdateCategoryIncome(request *models.IncomeCategory) (*dtos.CategoryIncomeResponse, *dtos.ErrorResponse) {
+func (s *CategoryIncomeService) UpdateCategoryIncome(request *models.IncomeCategory) (*dtos.CategoryResponse, *dtos.ErrorResponse) {
 	existingCategory, err := s.categoryIncomeRepo.FindCategoryIncomeById(int(request.ID))
 	if err != nil {
 		return nil, err
